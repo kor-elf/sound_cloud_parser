@@ -4,6 +4,7 @@ namespace App\Parsers;
 use Illuminate\Support\Facades\Http;
 use App\Parsers\Entity\AbstractArtist;
 use App\Parsers\Entity\Artist;
+use App\Parsers\Entity\Tracks;
 use App\Parsers\Entity\Track;
 
 class SoundCloudParser
@@ -45,18 +46,14 @@ class SoundCloudParser
         return $artist;
     }
 
-    /**
-     * return array Track
-     */
-    public function getTracksFromArtist(int $artistId, int $limit = 30): array
+    public function getTracksFromArtist(int $artistId, int $limit = 30): Tracks
     {
         $url = self::API_LINK . '/users/' . $artistId . '/tracks?access=playable%2Cpreview&limit=' . $limit . '&client_id=' . $this->clientId;
         $response = Http::timeout($this->timeout)->get($url)->throw()->json();
 
-        $tracks = [];
+        $tracks = new Tracks();
 
         foreach ($response['collection'] as $soundCloudTrack) {
-
             $track = new Track();
             $id = $soundCloudTrack['id'];
             $track->setId($id);
@@ -74,13 +71,12 @@ class SoundCloudParser
             $track->setTitle($title);
             $link = $soundCloudTrack['permalink_url'];
             $track->setLink($link);
-            $description = $soundCloudTrack['description'];
+            $description = \nl2br($soundCloudTrack['description']);
             $track->setDescription($description);
             $license = $soundCloudTrack['license'];
             $track->setLicense($license);
 
-            $tracks[] = $track;
-            unset($track);
+            $tracks->add($track);
         }
 
         return $tracks;
