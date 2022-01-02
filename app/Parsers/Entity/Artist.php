@@ -20,7 +20,7 @@ class Artist extends AbstractArtist
 
     public function setFullName(string $fullName): void
     {
-        $this->fullname = $fullName;
+        $this->fullName = $fullName;
     }
 
     public function setUsername(string $username): void
