@@ -1,7 +1,7 @@
 <?php
 namespace App\Parsers\Entity;
 
-class Track
+class Track extends AbstractTrack
 {
     public function setId(int $id): void
     {
