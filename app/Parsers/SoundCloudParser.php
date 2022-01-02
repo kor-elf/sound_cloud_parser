@@ -4,6 +4,7 @@ namespace App\Parsers;
 use Illuminate\Support\Facades\Http;
 use App\Parsers\Entity\AbstractArtist;
 use App\Parsers\Entity\Artist;
+use App\Parsers\Entity\Track;
 
 class SoundCloudParser
 {
@@ -42,6 +43,47 @@ class SoundCloudParser
         $artist->setCountryCode($countryCode);
 
         return $artist;
+    }
+
+    /**
+     * return array Track
+     */
+    public function getTracksFromArtist(int $artistId, int $limit = 30): array
+    {
+        $url = self::API_LINK . '/users/' . $artistId . '/tracks?access=playable%2Cpreview&limit=' . $limit . '&client_id=' . $this->clientId;
+        $response = Http::timeout($this->timeout)->get($url)->throw()->json();
+
+        $tracks = [];
+
+        foreach ($response['collection'] as $soundCloudTrack) {
+
+            $track = new Track();
+            $id = $soundCloudTrack['id'];
+            $track->setId($id);
+            $duration = $soundCloudTrack['duration'];
+            $track->setDuration($duration);
+            $commentCount = $soundCloudTrack['comment_count'];
+            $track->setCommentCount($commentCount);
+            $likesCount = $soundCloudTrack['likes_count'];
+            $track->setLikesCount($likesCount);
+            $playbackCount = $soundCloudTrack['playback_count'];
+            $track->setPlaybackCount($playbackCount);
+            $downloadCount = $soundCloudTrack['download_count'];
+            $track->setDownloadCount($downloadCount);
+            $title = $soundCloudTrack['title'];
+            $track->setTitle($title);
+            $link = $soundCloudTrack['permalink_url'];
+            $track->setLink($link);
+            $description = $soundCloudTrack['description'];
+            $track->setDescription($description);
+            $license = $soundCloudTrack['license'];
+            $track->setLicense($license);
+
+            $tracks[] = $track;
+            unset($track);
+        }
+
+        return $tracks;
     }
 
 }
