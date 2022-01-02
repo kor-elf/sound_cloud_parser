@@ -53,16 +53,6 @@ class SoundCloudParserArtistsCommand extends Command
         if (!is_null($pathFile)) {
             $this->parserFile($pathFile);
         }
-
-        // dd($this->soundCloudParser->getArtist());
-
-        /*
-        $this->line('Собираем данные от раздела "Подкаст"');
-        $this->info('Данные от раздела "Подкаст" получили');
-        */
-
-
-        // return 0;
     }
 
     private function parserLink(string $link): bool
